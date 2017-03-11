@@ -71,14 +71,19 @@ def processPostBodyForImages(postBody, imagesPath, imagesUrlPath):
 			postBody = postBody.replace(concreteImageUrl, imageOutputUrlPath)
 			print "Found image url", concreteImageUrl, "already downloaded to path", concreteImagePath
 		else:
-			# Download the image and then replace the URL in body
-			imageContent = urllib2.urlopen(concreteImageUrl).read()
-			f = open(concreteImagePath, 'wb')
-			f.write(imageContent)
-			f.close()
+			try:
+				# Download the image and then replace the URL in body
+				imageContent = urllib2.urlopen(concreteImageUrl).read()
+				f = open(concreteImagePath, 'wb')
+				f.write(imageContent)
+				f.close()
 
-			postBody = postBody.replace(concreteImageUrl, imageOutputUrlPath)
-			print "Downloaded image url", concreteImageUrl, "to path", concreteImagePath
+				postBody = postBody.replace(concreteImageUrl, imageOutputUrlPath)
+				print "Downloaded image url", concreteImageUrl, "to path", concreteImagePath
+			except Exception:
+				# Occasional Tumblr DNS or other issues, so skip image
+				print "Download error - skipping this image"
+				break
 
 	return postBody
 
